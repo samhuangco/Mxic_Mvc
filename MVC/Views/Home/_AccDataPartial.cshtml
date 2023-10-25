@@ -1,0 +1,63 @@
+﻿@using System.Text.Json;
+<table class="table table-bordered" style="width:500px">
+    <thead>
+        <tr>
+            <th scope="col">姓名</th>
+            <th scope="col">年齡</th>
+            <th scope="col">生日</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var SessionKey in Context.Session.Keys)
+            {
+                if (SessionKey.StartsWith("Accinfo-"))
+                {
+                    string Json = Context.Session.GetString(SessionKey);
+                    var obj = JsonSerializer.Deserialize<Dictionary<string, string>>(Json);
+                    <tr>
+                        <td>@obj["Name"].ToString()</td>
+                        <td>@obj["Age"].ToString()</td>
+                        <td>@obj["Brithday"].ToString()</td>
+                        <td>
+                            <div class="btn-group" role="group" data-guid="@SessionKey">
+                                <button type="button" data-name="@obj["Name"].ToString()" data-age="@obj["Age"].ToString()" data-brithday="@obj["Brithday"].ToString()" class="btn btn-danger btn-sm btnUpdate">修改</button>
+                                <button type="button" data-name="" class="btn btn-danger btn-sm btnDelete">刪除</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(".btnUpdate").click(function () {
+        var Name = $(this).attr('data-name');
+        var Age = $(this).attr('data-age');
+        var Brithday = $(this).attr('data-brithday');
+        var guid = $(this).parent().attr('data-guid');
+
+        $('#btnUpdateSubmit').attr('data-guid', guid);
+        $('#btnSubmit').hide();
+        $('#btnUpdateSubmit').show();
+
+        $('#Name').val(Name);
+        $('#Age').val(Age);
+        $('#Brithday').val(Brithday);
+    });
+
+    $(".btnDelete").click(function () {
+        var guid = $(this).parent().attr('data-guid');
+
+        $.ajax({
+            type: "DELETE",
+            url: "Home/AccInfo/" + guid,
+            success: function (data, textStatus, xhr) {
+                $("#AccDataPartial").html(data);
+            }
+        })
+    });
+</script>

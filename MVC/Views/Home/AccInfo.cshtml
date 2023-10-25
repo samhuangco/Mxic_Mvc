@@ -1,0 +1,72 @@
+﻿@using System.Text.Json;
+@{
+    ViewData["Title"] = "建立帳號";
+}
+
+<div class="text-center">
+    <h5 class="display-4">建立帳號</h5>
+</div>
+
+@using (Html.BeginForm("AccInfo", "Home", FormMethod.Post))
+{
+    <div class="form-group row">
+        <label for="Name" class="col-sm-1 col-form-label">姓名</label>
+        <div class="col-sm-2">
+            <input type="text" class="form-control form-control-sm" id="Name" name="Name" placeholder="王小明" required>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Age" class="col-sm-1 col-form-label">年齡</label>
+        <div class="col-sm-2 ">
+            <input type="text" class="form-control form-control-sm" id="Age" name="Age" required>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Brithday" class="col-sm-1 col-form-label">生日</label>
+        <div class="col-sm-2 ">
+            <input type="text" class="form-control form-control-sm" id="Brithday" name="Brithday" required>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-2 ">
+            <button type="submit" id="btnSubmit" class="btn btn-primary btn-sm">建立帳號</button>
+            <button type="button" id="btnUpdateSubmit" class="btn btn-primary btn-sm"style="display:none;">修改帳號</button>
+        </div>
+    </div>
+}
+
+<div id="AccDataPartial">
+    @{
+        Html.RenderPartial("_AccDataPartial");
+    }
+</div>
+
+<script>
+
+
+    $("#btnUpdateSubmit").click(function () {
+        var Name = $('#Name').val();
+        var Age = $('#Age').val();
+        var Brithday = $('#Brithday').val();
+        var guid = $(this).attr('data-guid');
+
+        var dataJSON = { Name: Name, Age: Age, Brithday: Brithday };
+
+        $.ajax({
+            type: "PUT",
+            url: "Home/AccInfo/" + guid,
+            data: { Json : JSON.stringify(dataJSON) },
+            dataType: "text",
+            success: function (data, textStatus, xhr) {
+                $("#AccDataPartial").html(data);
+                $('#Name').val('');
+                $('#Age').val('');
+                $('#Brithday').val('');
+                $('#btnSubmit').show();
+                $('#btnUpdateSubmit').hide();
+            }
+        })
+
+    });
+
+</script>
